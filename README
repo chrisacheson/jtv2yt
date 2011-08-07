@@ -1,0 +1,5 @@
+Usage:
+  python jtv2yt.py jtv_login yt_email yt_password start_date end_date
+
+Example:
+  python jtv2yt.py myjtvchannel youtubeuser@example.com MyYouTubePassword 2010-05-28 2011-07-15
