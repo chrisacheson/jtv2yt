@@ -37,7 +37,7 @@ def transfer_videos(jtv_login, yt_email, yt_password, start_date=None, end_date=
     some_data = []
 
     for item in all_data:
-        if "kind" in item and item["kind"] == "highlight" and "video_file_url" in item and item["video_file_url"]:
+        if "created_on" in item and "kind" in item and item["kind"] == "highlight" and "video_file_url" in item and item["video_file_url"]:
             date_created = datetime.datetime.strptime(item["created_on"], "%Y-%m-%d %H:%M:%S %Z").date()
 
             if start_date and date_created < start_date:
@@ -57,7 +57,18 @@ def transfer_videos(jtv_login, yt_email, yt_password, start_date=None, end_date=
     for item in some_data:
         item_counter += 1
         ctr_string = "[" + str(item_counter) + "/" + str(num_items) + "]"
-        print ctr_string, "Downloading video \"" + item["title"] + "\" from Justin.tv, reported size:", item["file_size"], "bytes"
+
+        # API sometimes doesn't give us a file size
+        if "file_size" in item:
+            download_size_string = "reported size: " + item["file_size"] + " bytes"
+        else:
+            download_size_string = "file size unknown"
+
+        # Just in case:
+        if "title" not in item: item["title"] = item["created_on"]
+        if "description" not in item: item["description"] = "No description."
+
+        print ctr_string, "Downloading video \"" + item["title"] + "\" from Justin.tv,", download_size_string
         filename = urllib.urlretrieve(item["video_file_url"])[0]
         file_size = os.stat(filename).st_size
         print ctr_string, "Uploading video \"" + item["title"] + "\" to YouTube, file size:", file_size, "bytes"
